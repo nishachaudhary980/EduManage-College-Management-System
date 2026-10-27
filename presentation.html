@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>EduManage — Project Presentation</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<style>
+  @page { size: A4 landscape; margin: 0; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #0a0a0f;
+    color: #fff;
+    padding: 40px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  
+  /* DOWNLOAD BUTTON (fixed top-right) */
+  .download-btn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    background: linear-gradient(135deg, #818cf8, #c084fc, #f472b6);
+    color: #fff;
+    border: none;
+    padding: 14px 28px;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 10px 30px rgba(129,140,248,0.5);
+    transition: all 0.3s;
+  }
+  .download-btn:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 20px 45px rgba(129,140,248,0.7);
+  }
+  .download-btn:active {
+    transform: translateY(-1px) scale(0.98);
+  }
+  
+  /* SLIDES CONTAINER */
+  .slides-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+    width: 100%;
+  }
+  
+  .slide {
+    width: 1123px;      /* A4 landscape width @ 96dpi */
+    height: 794px;      /* A4 landscape height @ 96dpi */
+    padding: 45px 55px;
+    background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 50%, #2a1a3e 100%);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border-radius: 12px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    page-break-after: always;
+  }
+  
+  .slide::before {
+    content: '';
+    position: absolute;
+    top: -100px; right: -100px;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(129,140,248,0.35), transparent 70%);
+    border-radius: 50%;
+    filter: blur(60px);
+    pointer-events: none;
+  }
+  
+  .slide::after {
+    content: '';
+    position: absolute;
+    bottom: -100px; left: -100px;
+    width: 350px; height: 350px;
+    background: radial-gradient(circle, rgba(192,132,252,0.3), transparent 70%);
+    border-radius: 50%;
+    filter: blur(60px);
+    pointer-events: none;
+  }
+  
+  .content {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+  }
+  
+  /* TITLE SLIDE */
+  .title-slide {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .logo-circle {
+    width: 110px;
+    height: 110px;
+    border-radius: 26px;
+    background: linear-gradient(135deg, #818cf8, #c084fc);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3.5rem;
+    margin-bottom: 26px;
+    box-shadow: 0 20px 60px rgba(129,140,248,0.5);
+  }
+  
+  .title-slide h1 {
+    font-size: 3.6rem;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    background: linear-gradient(180deg, #fff 30%, rgba(255,255,255,0.7) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 12px;
+  }
+  
+  .title-slide .subtitle {
+    font-size: 1.4rem;
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 36px;
+  }
+  
+  .title-slide .serif {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    background: linear-gradient(135deg, #818cf8, #c084fc, #f472b6);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  
+  .presenter {
+    padding: 18px 38px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 100px;
+    font-size: 1rem;
+    color: rgba(255,255,255,0.85);
+  }
+  
+  .presenter b { color: #818cf8; font-weight: 700; }
+  
+  /* CONTENT SLIDE */
+  .slide-header {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    margin-bottom: 38px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid rgba(129,140,248,0.3);
+  }
+  
+  .slide-icon {
+    font-size: 2.2rem;
+    width: 64px;
+    height: 64px;
+    background: linear-gradient(135deg, rgba(129,140,248,0.2), rgba(192,132,252,0.1));
+    border: 1px solid rgba(129,140,248,0.3);
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  
+  .slide-header h2 {
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    background: linear-gradient(180deg, #fff, rgba(255,255,255,0.75));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  
+  .slide-header .slide-num {
+    margin-left: auto;
+    font-size: 0.95rem;
+    color: rgba(255,255,255,0.4);
+    font-weight: 600;
+  }
+  
+  /* BULLETS */
+  .bullets {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  
+  .bullet {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 16px 22px;
+    background: rgba(255,255,255,0.04);
+    border-left: 4px solid #818cf8;
+    border-radius: 12px;
+    font-size: 1rem;
+    line-height: 1.45;
+    color: rgba(255,255,255,0.9);
+  }
+  
+  .bullet .bullet-icon {
+    font-size: 1.4rem;
+    flex-shrink: 0;
+  }
+  
+  .bullet b {
+    color: #c084fc;
+    font-weight: 700;
+  }
+  
+  /* GRID LAYOUT */
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+  }
+  
+  .grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  
+  .feature-card {
+    padding: 22px 20px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+  }
+  
+  .feature-card .fc-icon {
+    font-size: 1.9rem;
+    margin-bottom: 12px;
+    display: block;
+  }
+  
+  .feature-card h4 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 6px;
+  }
+  
+  .feature-card p {
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.6);
+    line-height: 1.45;
+  }
+  
+  /* STATS ROW */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+  }
+  
+  .stat-box {
+    text-align: center;
+    padding: 22px 14px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(129,140,248,0.2);
+    border-radius: 16px;
+  }
+  
+  .stat-box .stat-num {
+    font-size: 2.2rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #818cf8, #c084fc);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  
+  .stat-box .stat-label {
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.6);
+    text-transform: uppercase;
+    letter-spacing: 1.3px;
+    font-weight: 600;
+  }
+  
+  /* TECH STACK */
+  .tech-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+  
+  .tech-item {
+    padding: 20px 14px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    text-align: center;
+  }
+  
+  .tech-item .tech-icon {
+    font-size: 2.2rem;
+    margin-bottom: 10px;
+    display: block;
+  }
+  
+  .tech-item h5 {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 4px;
+  }
+  
+  .tech-item p {
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.5);
+  }
+  
+  /* MODULES */
+  .module {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 16px 22px;
+    background: rgba(255,255,255,0.04);
+    border-radius: 14px;
+    margin-bottom: 12px;
+    border-left: 4px solid #c084fc;
+  }
+  
+  .module .mod-icon {
+    font-size: 1.8rem;
+    flex-shrink: 0;
+  }
+  
+  .module .mod-info h4 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 3px;
+  }
+  
+  .module .mod-info p {
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.6);
+  }
+  
+  /* THANK YOU */
+  .thank-you {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .thank-you h1 {
+    font-size: 4.5rem;
+    font-weight: 800;
+    letter-spacing: -0.05em;
+    background: linear-gradient(135deg, #818cf8, #c084fc, #f472b6);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 18px;
+  }
+  
+  .thank-you .serif {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    font-size: 1.8rem;
+    color: rgba(255,255,255,0.75);
+    margin-bottom: 36px;
+  }
+  
+  .thank-you .contact {
+    display: flex;
+    gap: 18px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  
+  .thank-you .contact-item {
+    padding: 12px 26px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(129,140,248,0.3);
+    border-radius: 100px;
+    font-size: 0.95rem;
+    color: rgba(255,255,255,0.85);
+  }
+  
+  /* PRINT */
+  @media print {
+    @page { size: A4 landscape; margin: 0; }
+    body { 
+      padding: 0; 
+      background: #0a0a0f; 
+      gap: 0;
+    }
+    .download-btn { display: none !important; }
+    .slides-wrapper { gap: 0; }
+    .slide { 
+      border-radius: 0; 
+      box-shadow: none;
+      page-break-after: always;
+      page-break-inside: avoid;
+    }
+    .slide:last-child { page-break-after: auto; }
+  }
+</style>
+</head>
+<body>
+
+<!-- DOWNLOAD BUTTON -->
+<button class="download-btn" onclick="downloadPDF()">
+  📥 Download PDF
+</button>
+
+<div class="slides-wrapper" id="slides-wrapper">
+
+<!-- ============================================
+     SLIDE 1: TITLE
+     ============================================ -->
+<div class="slide title-slide">
+  <div class="content">
+    <div class="logo-circle">🎓</div>
+    <h1>EduManage</h1>
+    <p class="subtitle">College Management <span class="serif">System</span></p>
+    <div class="presenter">
+      Presented by <b>Nisha Chaudhary</b> · BCA Project 2025
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 2: INTRODUCTION -->
+<div class="slide">
+  <div class="content">
+    <div class="slide-header">
+      <div class="slide-icon">💡</div>
+      <h2>Introduction</h2>
+      <span class="slide-num">01</span>
+    </div>
+    <div class="bullets">
+      <div class="bullet"><span class="bullet-icon">🎯</span><div><b>EduManage</b> ek complete college management system hai jo students, library aur fees ko ek hi platform me manage karta hai.</div></div>
+      <div class="bullet"><span class="bullet-icon">🌟</span><div>Modern web technologies — <b>HTML, CSS, JavaScript</b> — se banaya gaya hai, bina kisi backend ke.</div></div>
+      <div class="bullet"><span class="bullet-icon">💎</span><div><b>Glassmorphism + 3D UI</b> — 3 crore wala premium interface jo user ko attract karta hai.</div></div>
+      <div class="bullet"><span class="bullet-icon">⚡</span><div><b>Real-time data</b> — login, add/edit/delete, analytics — sab kuch working.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 3: PROBLEM -->
+<div class="slide">
+  <div class="content">
+    <div class="slide-header">
+      <div class="slide-icon">❓</div>
+      <h2>Problem Statement</h2>
+      <span class="slide-num">02</span>
+    </div>
+    <div class="bullets">
+      <div class="bullet"><span class="bullet-icon">📂</span><div>Colleges me <b>data scattered</b> hota hai — students ka ek register, library ka dusra, fees ka teesra.</div></div>
+      <div class="bullet"><span class="bullet-icon">⏱️</span><div><b>Time consuming</b> — manual data entry me hours lagte hain, aur errors bhi hote hain.</div></div>
+      <div class="bullet"><span class="bullet-icon">❌</span><div><b>No centralized access</b> — admin ko har jagah jana padta hai.</div></div>
+      <div class="bullet"><span class="bullet-icon">📊</span><div><b>No analytics</b> — college ke performance ka koi visual insight nahi milta.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 4: SOLUTION -->
+<div class="slide">
+  <div class="content">
+    <div class="slide-header">
+      <div class="slide-icon">✨</div>
+      <h2>Our Solution</h2>
+      <span class="slide-num">03</span>
+    </div>
+    <div class="bullets">
+      <div class="bullet"><span class="bullet-icon">🎯</span><div><b>One platform</b> — Students, Library, Fees — sab ek dashboard me.</div></div>
+      <div class="bullet"><span class="bullet-icon">⚡</span><div><b>Real-time updates</b> — Add/Edit/Delete karo → instantly reflect hoga.</div></div>
+      <div class="bullet"><span class="bullet-icon">💾</span><div><b>LocalStorage</b> — data browser me save hota hai, page reload pe bhi rehta hai.</div></div>
+      <div class="bullet"><span class="bullet-icon">📊</span><div><b>Analytics Dashboard</b> — Charts, top performers, insights.</div></div>
+      <div class="bullet"><span class="bullet-icon">🎨</span><div><b>Premium UI</b> — 3 crore wala design jo impress kare.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 5: KEY FEATURES -->
+<div class="slide">
+  <div class="content">
+    <div class="slide-header">
+      <div class="slide-icon">🚀</div>
+      <h2>Key Features</h2>
+      <span class="slide-num">04</span>
+    </div>
+    <div class="grid-3">
+      <div class="feature-card"><span class="fc-icon">🔐</span><h4>Secure Login</h4><p>Admin authentication with username & password</p></div>
+      <div class="feature-card"><span class="fc-icon">🎓</span><h4>Student Management</h4><p>Add, edit, delete students with grades & marks</p></div>
+      <div class="feature-card"><span class="fc-icon">📚</span><h4>Library System</h4><p>Issue/return books with due date tracking</p></div>
+      <div class="feature-card"><span class="fc-icon">💰</span><h4>Fee Management</h4><p>Collect fees, track pending payments</p></div>
+      <div class="feature-card"><span class="fc-icon">📈</span><h4>Analytics</h4><p>Visual charts & top performer insights</p></div>
+      <div class="feature-card"><span class="fc-icon">📄</span><h4>Report Export</h4><p>Download complete college report as TXT</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 6: MODULES -->
+<div class="slide">
+  <div class="content">
+    <div class="slide-header">
+      <div class="slide-icon">🧩</div>
+      <h2>System Modules</h2>
+      <span class="slide-num">05</span>
+    </div>
+    <div class="module"><span class="mod-icon">📊</span><div class="mod-info"><h4>Dashboard Module</h4><p>Overview stats, recent students, quick actions</p></div></div>
+    <div class="module"><span class="mod-icon">🎓</span><div class="mod-info"><h4>Students Module</h4><p>Complete CRUD operations with grades (A+, A, B, C, D)</p></div></div>
+    <div class="module"><span class="mod-icon">📚</span><div class="mod-info"><h4>Library Module</h4><p>Book inventory, issue/return with due dates</p></div></div>
+    <div class="module"><span class="mod-icon">💰</span><div class="mod-info"><h4>Fees Module</h4><p>Fee collection, payment status, pending tracking</p></div></div>
+    <div class="module"><span class="mod-icon">📈</span><div class="mod-info"><h4>Analytics Module</h4><p>Charts, top performers, trend insights</p></div></div>
+  </div>
+</div>
+
+<!-- SLIDE 7: TECH STACK -->
+<div class="slide">
+  <div class="content">
+    <div class="slide-header">
+      <div class="slide-icon">⚙️</div>
+      <h2>Technology Stack</h2>
+      <span class="slide-num">06</span>
+    </div>
+    <div class="tech-grid">
+      <div class="tech-item"><span class="tech-icon">🌐</span><h5>HTML5</h5><p>Structure</p></div>
+      <div class="tech-item"><span class="tech-icon">🎨</span><h5>CSS3</h5><p>Design + Animations</p></div>
+      <div class="tech-item"><span class="tech-icon">⚡</span><h5>JavaScript</h5><p>Logic + Interactivity</p></div>
+      <div class="tech-item"><span class="tech-icon">💾</span><h5>LocalStorage</h5><p>Data Persistence</p></div>
+    </div>
+    <div style="margin-top:24px;" class="bullets">
+      <div class="bullet"><span class="bullet-icon">✨</span><div><b>Design:</b> Glassmorphism, Mesh gradients, Particle network, 3D hover, Cursor glow</div></div>
+      <div class="bullet"><span class="bullet-icon">📱</span><div><b>Responsive:</b> Desktop, tablet, mobile — sab pe perfect</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 8: UI/UX -->
+<div class="slide">
+  <div class="content">
+    <div class="slide-header">
+      <div class="slide-icon">🎨</div>
+      <h2>UI/UX Highlights</h2>
+      <span class="slide-num">07</span>
+    </div>
+    <div class="grid-2">
+      <div class="feature-card"><span class="fc-icon">💎</span><h4>Glassmorphism</h4><p>Frosted glass effect on all cards, sidebar & modals</p></div>
+      <div class="feature-card"><span class="fc-icon">🌈</span><h4>Mesh Gradients</h4><p>Animated purple/pink/blue background blobs</p></div>
+      <div class="feature-card"><span class="fc-icon">✨</span><h4>Particle Network</h4><p>Live constellation effect with connecting lines</p></div>
+      <div class="feature-card"><span class="fc-icon">🎯</span><h4>3D Hover Effects</h4><p>Cards lift + glow + icon rotate on hover</p></div>
+      <div class="feature-card"><span class="fc-icon">🔮</span><h4>Neon Glow Buttons</h4><p>Gradient buttons with shine sweep animation</p></div>
+      <div class="feature-card"><span class="fc-icon">🖱️</span><h4>Cursor Glow</h4><p>Purple glow follows mouse movement</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 9: STATS -->
+<div class="slide">
+  <div class="content">
+    <div class="slide-header">
+      <div class="slide-icon">📊</div>
+      <h2>Project Statistics</h2>
+      <span class="slide-num">08</span>
+    </div>
+    <div class="stats-row">
+      <div class="stat-box"><div class="stat-num">5</div><div class="stat-label">Modules</div></div>
+      <div class="stat-box"><div class="stat-num">17+</div><div class="stat-label">Features</div></div>
+      <div class="stat-box"><div class="stat-num">3</div><div class="stat-label">Files</div></div>
+      <div class="stat-box"><div class="stat-num">2K+</div><div class="stat-label">Lines of Code</div></div>
+    </div>
+    <div style="margin-top:30px;" class="bullets">
+      <div class="bullet"><span class="bullet-icon">⚡</span><div><b>Load Time:</b> Under 1 second (no backend)</div></div>
+      <div class="bullet"><span class="bullet-icon">💯</span><div><b>Console Clean:</b> Zero errors, zero warnings</div></div>
+      <div class="bullet"><span class="bullet-icon">📱</span><div><b>Responsive:</b> Works perfectly on all screen sizes</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 10: FUTURE -->
+<div class="slide">
+  <div class="content">
+    <div class="slide-header">
+      <div class="slide-icon">🚀</div>
+      <h2>Future Scope</h2>
+      <span class="slide-num">09</span>
+    </div>
+    <div class="bullets">
+      <div class="bullet"><span class="bullet-icon">🗄️</span><div><b>Database Integration</b> — MongoDB / MySQL for real data storage</div></div>
+      <div class="bullet"><span class="bullet-icon">👥</span><div><b>Multi-user System</b> — Students, Teachers, Admin with roles</div></div>
+      <div class="bullet"><span class="bullet-icon">📱</span><div><b>Mobile App</b> — React Native version for Android/iOS</div></div>
+      <div class="bullet"><span class="bullet-icon">📧</span><div><b>Email/SMS Alerts</b> — Fee reminders, library due notifications</div></div>
+      <div class="bullet"><span class="bullet-icon">📊</span><div><b>Advanced Analytics</b> — ML-based performance predictions</div></div>
+      <div class="bullet"><span class="bullet-icon">☁️</span><div><b>Cloud Deployment</b> — Host on AWS / Vercel / Netlify</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 11: CONCLUSION -->
+<div class="slide">
+  <div class="content">
+    <div class="slide-header">
+      <div class="slide-icon">🎯</div>
+      <h2>Conclusion</h2>
+      <span class="slide-num">10</span>
+    </div>
+    <div class="bullets">
+      <div class="bullet"><span class="bullet-icon">✅</span><div><b>Complete Solution</b> — College management ka pura system ek jagah.</div></div>
+      <div class="bullet"><span class="bullet-icon">✅</span><div><b>Modern Technology</b> — Latest web technologies use kiye gaye.</div></div>
+      <div class="bullet"><span class="bullet-icon">✅</span><div><b>Premium UI/UX</b> — 3 crore wala design jo impress karta hai.</div></div>
+      <div class="bullet"><span class="bullet-icon">✅</span><div><b>Scalable & Extendable</b> — Future features easily add ho sakte hain.</div></div>
+      <div class="bullet"><span class="bullet-icon">✅</span><div><b>Practical Use</b> — Real colleges me implement kiya ja sakta hai.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 12: THANK YOU -->
+<div class="slide thank-you">
+  <div class="content">
+    <h1>Thank You</h1>
+    <p class="serif">Questions & Feedback welcome</p>
+    <div class="contact">
+      <div class="contact-item">👨‍💻 Nisha Chaudhary</div>
+      <div class="contact-item">🎓 BCA Project 2025</div>
+      <div class="contact-item">💼 EduManage System</div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+  function downloadPDF() {
+    const element = document.getElementById('slides-wrapper');
+    const opt = {
+      margin: 0,
+      filename: 'EduManage-Presentation-Nisha-Chaudhary.pdf',
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { 
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#0a0a0f',
+        logging: false
+      },
+      jsPDF: { 
+        unit: 'px', 
+        format: [1123, 794], 
+        orientation: 'landscape' 
+      },
+      pagebreak: { mode: ['avoid-all', 'css'] }
+    };
+    html2pdf().set(opt).from(element).save();
+  }
+</script>
+
+</body>
+</html>

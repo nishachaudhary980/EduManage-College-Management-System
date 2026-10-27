@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EduManage · Welcome</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Inter', sans-serif;
+    background: radial-gradient(ellipse at top left, rgba(79,70,229,0.25), transparent 50%),
+                radial-gradient(ellipse at bottom right, rgba(192,132,252,0.2), transparent 50%),
+                #0a0a0f;
+    color: #fff;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    overflow: hidden;
+    position: relative;
+  }
+  body::before, body::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(120px);
+    opacity: 0.4;
+    pointer-events: none;
+  }
+  body::before {
+    width: 500px; height: 500px;
+    background: #4f46e5;
+    top: -200px; left: -200px;
+    animation: float 15s ease-in-out infinite;
+  }
+  body::after {
+    width: 450px; height: 450px;
+    background: #c084fc;
+    bottom: -200px; right: -200px;
+    animation: float 15s ease-in-out infinite reverse;
+  }
+  @keyframes float {
+    0%,100% { transform: translate(0,0) scale(1); }
+    50% { transform: translate(40px,-40px) scale(1.15); }
+  }
+
+  .welcome-box {
+    position: relative;
+    z-index: 2;
+    background: rgba(15,15,24,0.75);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 28px;
+    padding: 48px 44px;
+    max-width: 440px;
+    width: 100%;
+    text-align: center;
+    backdrop-filter: blur(40px) saturate(180%);
+    box-shadow: 0 40px 80px -20px rgba(0,0,0,0.9),
+                0 0 100px -20px rgba(129,140,248,0.4);
+    animation: pop 0.9s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  @keyframes pop {
+    from { transform: scale(0.85) translateY(30px); opacity: 0; }
+    to { transform: scale(1) translateY(0); opacity: 1; }
+  }
+  .welcome-box::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 15%; right: 15%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #818cf8, #c084fc, #f472b6, transparent);
+    border-radius: 2px;
+  }
+
+  .logo {
+    font-size: 3rem;
+    width: 80px; height: 80px;
+    margin: 0 auto 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #818cf8, #c084fc);
+    border-radius: 22px;
+    box-shadow: 0 15px 40px rgba(129,140,248,0.5),
+                inset 0 1px 0 rgba(255,255,255,0.3);
+    animation: logoFloat 3.5s ease-in-out infinite;
+  }
+  @keyframes logoFloat {
+    0%,100% { transform: translateY(0) rotate(-3deg); }
+    50% { transform: translateY(-8px) rotate(3deg); }
+  }
+
+  h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    background: linear-gradient(180deg, #fff, rgba(255,255,255,0.7));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 6px;
+  }
+  .subtitle {
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.6);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 32px;
+  }
+
+  .qr-wrap {
+    display: inline-block;
+    padding: 14px;
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 20px 50px -10px rgba(129,140,248,0.6);
+    margin-bottom: 20px;
+    animation: qrPulse 3s ease-in-out infinite;
+  }
+  @keyframes qrPulse {
+    0%,100% { box-shadow: 0 20px 50px -10px rgba(129,140,248,0.6); }
+    50% { box-shadow: 0 20px 60px -5px rgba(192,132,252,0.9); }
+  }
+  .qr-wrap img, .qr-wrap canvas {
+    display: block;
+    border-radius: 8px;
+  }
+
+  .scan-hint {
+    font-size: 0.92rem;
+    color: rgba(255,255,255,0.85);
+    margin-bottom: 6px;
+    font-weight: 600;
+  }
+  .scan-hint b { color: #818cf8; }
+  .scan-sub {
+    font-size: 0.78rem;
+    color: rgba(255,255,255,0.45);
+    margin-bottom: 32px;
+  }
+
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 22px;
+  }
+  .divider::before, .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(255,255,255,0.1);
+  }
+  .divider span {
+    font-size: 0.7rem;
+    color: rgba(255,255,255,0.4);
+    letter-spacing: 2px;
+    font-weight: 700;
+  }
+
+  .login-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, #818cf8, #c084fc, #f472b6);
+    color: #fff;
+    border: none;
+    border-radius: 14px;
+    font-family: inherit;
+    font-size: 0.98rem;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+    box-shadow: 0 15px 35px -10px rgba(129,140,248,0.5);
+    letter-spacing: 0.4px;
+  }
+  .login-btn:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 25px 50px -12px rgba(129,140,248,0.7);
+  }
+  .login-btn:active { transform: translateY(-1px) scale(0.99); }
+
+  @media (max-width: 480px) {
+    .welcome-box { padding: 36px 28px; border-radius: 22px; }
+    h1 { font-size: 1.7rem; }
+    .logo { width: 68px; height: 68px; font-size: 2.4rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="welcome-box">
+  <div class="logo">🎓</div>
+  <h1>EduManage</h1>
+  <p class="subtitle">College Management System</p>
+
+  <div class="qr-wrap" id="welcome-qr"></div>
+
+  <p class="scan-hint">📱 Scan QR with your <b>phone</b> to login</p>
+  <p class="scan-sub">Ya neeche button dabao is device pe login karne ke liye</p>
+
+  <div class="divider"><span>OR</span></div>
+
+  <a href="index.html" class="login-btn">💻 Login on this device</a>
+</div>
+
+<script>
+  window.addEventListener('load', () => {
+    // QR mein login page ka URL encode hoga
+    const loginUrl = window.location.origin + '/index.html';
+    new QRCode(document.getElementById('welcome-qr'), {
+      text: loginUrl,
+      width: 200,
+      height: 200,
+      colorDark: '#000000',
+      colorLight: '#ffffff',
+      correctLevel: QRCode.CorrectLevel.H
+    });
+  });
+</script>
+</body>
+</html>

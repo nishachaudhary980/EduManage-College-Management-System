@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EduManage · College Management System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<!-- QR Libraries -->
+<script src="https://unpkg.com/html5-qrcode"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+</head>
+<body class="theme-dark">
+<div class="bg-base"></div>
+<div class="bg-mesh">
+  <div class="mesh-blob mesh-1"></div>
+  <div class="mesh-blob mesh-2"></div>
+  <div class="mesh-blob mesh-3"></div>
+  <div class="mesh-blob mesh-4"></div>
+</div>
+<div class="bg-noise"></div>
+<canvas id="vfx-canvas"></canvas>
+<div class="cursor-glow" id="cursor-glow"></div>
+
+<!-- LOGIN SCREEN -->
+<div class="login-screen" id="login-screen">
+  <div class="login-bg-orbs">
+    <div class="login-orb orb-a"></div>
+    <div class="login-orb orb-b"></div>
+    <div class="login-orb orb-c"></div>
+  </div>
+
+  <div class="login-box">
+    <div class="login-brand">
+      <div class="brand-logo">🎓</div>
+      <div class="brand-text">
+        <div class="brand-name">EduManage</div>
+        <div class="brand-tag">College Management System</div>
+      </div>
+    </div>
+
+    <h1 class="login-title">Welcome Back</h1>
+    <p class="login-sub">Sign in to access your dashboard</p>
+
+    <form class="login-form" onsubmit="handleLogin(event)">
+      <div class="input-group">
+        <label>Username</label>
+        <div class="input-wrap">
+          <span class="input-icon">👤</span>
+          <input type="text" id="login-user" placeholder="Enter username" value="admin" required>
+        </div>
+      </div>
+      <div class="input-group">
+        <label>Password</label>
+        <div class="input-wrap">
+          <span class="input-icon">🔒</span>
+          <input type="password" id="login-pass" placeholder="Enter password" value="admin123" required>
+        </div>
+      </div>
+      <button type="submit" class="login-btn">
+        <span class="btn-shine"></span>
+        <span>Sign In →</span>
+      </button>
+      <p class="login-hint">Demo: <b>admin</b> / <b>admin123</b></p>
+    </form>
+
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div class="app" id="app" style="display:none;">
+
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-logo-mini">🎓</div>
+      <div class="brand-text-mini">
+        <div class="brand-name-mini">EduManage</div>
+        <div class="brand-tag-mini">v2.0</div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <button class="nav-item active" data-tab="dashboard" onclick="switchTab('dashboard', this)">
+        <span class="nav-icon">📊</span>
+        <span class="nav-label">Dashboard</span>
+      </button>
+      <button class="nav-item" data-tab="students" onclick="switchTab('students', this)">
+        <span class="nav-icon">🎓</span>
+        <span class="nav-label">Students</span>
+      </button>
+      <button class="nav-item" data-tab="faculty" onclick="switchTab('faculty', this)">
+        <span class="nav-icon">👨‍🏫</span>
+        <span class="nav-label">Faculty</span>
+      </button>
+      <button class="nav-item" data-tab="library" onclick="switchTab('library', this)">
+        <span class="nav-icon">📚</span>
+        <span class="nav-label">Library</span>
+      </button>
+      <button class="nav-item" data-tab="fees" onclick="switchTab('fees', this)">
+        <span class="nav-icon">💰</span>
+        <span class="nav-label">Fees</span>
+      </button>
+      <button class="nav-item" data-tab="analytics" onclick="switchTab('analytics', this)">
+        <span class="nav-icon">📈</span>
+        <span class="nav-label">Analytics</span>
+      </button>
+      <button class="nav-item" data-tab="qrscan" onclick="switchTab('qrscan', this)">
+        <span class="nav-icon">📷</span>
+        <span class="nav-label">QR Scanner</span>
+      </button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-info">
+        <div class="user-avatar">A</div>
+        <div class="user-details">
+          <div class="user-name">Admin</div>
+          <div class="user-role">Administrator</div>
+        </div>
+      </div>
+      <button class="logout-btn" onclick="handleLogout()" title="Logout">⏻</button>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    <header class="topbar">
+      <div class="topbar-left">
+        <h1 class="page-title" id="page-title">Dashboard</h1>
+        <p class="page-sub" id="page-sub">Overview of your college</p>
+      </div>
+      <div class="topbar-right">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" placeholder="Search..." id="global-search">
+        </div>
+        <button class="icon-btn" title="Notifications">🔔</button>
+        <button class="icon-btn" title="Settings">⚙️</button>
+      </div>
+    </header>
+
+    <!-- DASHBOARD -->
+    <section class="tab-content active" id="tab-dashboard">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon">🎓</div>
+          <div class="stat-info">
+            <div class="stat-num" id="stat-students">0</div>
+            <div class="stat-label">Total Students</div>
+          </div>
+          <div class="stat-trend up">+12%</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">👨‍🏫</div>
+          <div class="stat-info">
+            <div class="stat-num" id="stat-faculty">0</div>
+            <div class="stat-label">Total Faculty</div>
+          </div>
+          <div class="stat-trend up">+5%</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">📚</div>
+          <div class="stat-info">
+            <div class="stat-num" id="stat-books">0</div>
+            <div class="stat-label">Library Books</div>
+          </div>
+          <div class="stat-trend up">+8%</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">💰</div>
+          <div class="stat-info">
+            <div class="stat-num" id="stat-fees">₹0</div>
+            <div class="stat-label">Fees Collected</div>
+          </div>
+          <div class="stat-trend up">+24%</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">📖</div>
+          <div class="stat-info">
+            <div class="stat-num" id="stat-issued">0</div>
+            <div class="stat-label">Books Issued</div>
+          </div>
+          <div class="stat-trend down">-3%</div>
+        </div>
+      </div>
+
+      <div class="dashboard-grid">
+        <div class="panel">
+          <div class="panel-header">
+            <h3>Recent Students</h3>
+            <button class="link-btn" onclick="switchTabByName('students')">View All →</button>
+          </div>
+          <div class="panel-body" id="recent-students"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-header"><h3>Quick Actions</h3></div>
+          <div class="panel-body quick-actions">
+            <button class="quick-btn" onclick="switchTabByName('students'); openStudentModal()">
+              <span>➕</span> Add Student
+            </button>
+            <button class="quick-btn" onclick="switchTabByName('faculty'); openFacultyModal()">
+              <span>👨‍🏫</span> Add Faculty
+            </button>
+            <button class="quick-btn" onclick="switchTabByName('library'); openBookModal()">
+              <span>📚</span> Add Book
+            </button>
+            <button class="quick-btn" onclick="switchTabByName('fees')">
+              <span>💰</span> Collect Fee
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STUDENTS -->
+    <section class="tab-content" id="tab-students">
+      <div class="section-header">
+        <div>
+          <h2>Students Management</h2>
+          <p class="section-sub">Add, edit and manage student records</p>
+        </div>
+        <button class="primary-btn" onclick="openStudentModal()">
+          <span>➕</span> Add Student
+        </button>
+      </div>
+      <div class="table-wrap">
+        <table class="data-table" id="students-table">
+          <thead>
+            <tr>
+              <th>Photo</th>
+              <th>Roll No</th>
+              <th>Name</th>
+              <th>Course</th>
+              <th>Year</th>
+              <th>Marks</th>
+              <th>Grade</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="students-tbody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- FACULTY -->
+    <section class="tab-content" id="tab-faculty">
+      <div class="section-header">
+        <div>
+          <h2>Faculty Management</h2>
+          <p class="section-sub">Add and manage teaching staff</p>
+        </div>
+        <button class="primary-btn" onclick="openFacultyModal()">
+          <span>➕</span> Add Faculty
+        </button>
+      </div>
+      <div class="faculty-grid" id="faculty-grid"></div>
+    </section>
+
+    <!-- LIBRARY -->
+    <section class="tab-content" id="tab-library">
+      <div class="section-header">
+        <div>
+          <h2>Library Management</h2>
+          <p class="section-sub">Manage books and issue/return records</p>
+        </div>
+        <button class="primary-btn" onclick="openBookModal()">
+          <span>📚</span> Add Book
+        </button>
+      </div>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Book ID</th>
+              <th>Title</th>
+              <th>Author</th>
+              <th>Status</th>
+              <th>Issued To</th>
+              <th>Due Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="library-tbody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- FEES -->
+    <section class="tab-content" id="tab-fees">
+      <div class="section-header">
+        <div>
+          <h2>Fees Management</h2>
+          <p class="section-sub">Track fee payments and expenses</p>
+        </div>
+        <button class="primary-btn" onclick="openFeeModal()">
+          <span>💰</span> Collect Fee
+        </button>
+      </div>
+      <div class="fees-grid">
+        <div class="fee-card">
+          <div class="fee-label">Total Collected</div>
+          <div class="fee-amount" id="fee-collected">₹0</div>
+        </div>
+        <div class="fee-card">
+          <div class="fee-label">Pending</div>
+          <div class="fee-amount" id="fee-pending">₹0</div>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Receipt #</th>
+              <th>Student</th>
+              <th>Amount</th>
+              <th>Date</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="fees-tbody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ANALYTICS -->
+    <section class="tab-content" id="tab-analytics">
+      <div class="section-header">
+        <div>
+          <h2>Analytics</h2>
+          <p class="section-sub">Visual insights and reports</p>
+        </div>
+        <button class="primary-btn" onclick="exportReport()">
+          <span>📄</span> Export PDF
+        </button>
+      </div>
+      <div class="analytics-grid">
+        <div class="panel">
+          <div class="panel-header"><h3>📊 Student Distribution</h3></div>
+          <div class="panel-body" id="chart-courses"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-header"><h3>📈 Fee Collection</h3></div>
+          <div class="panel-body" id="chart-fees"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-header"><h3>📚 Library Activity</h3></div>
+          <div class="panel-body" id="chart-library"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-header"><h3>🏆 Top Performers</h3></div>
+          <div class="panel-body" id="top-performers"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- QR SCANNER -->
+    <section class="tab-content" id="tab-qrscan">
+      <div class="section-header">
+        <div>
+          <h2>QR Code Scanner</h2>
+          <p class="section-sub">Scan student/faculty QR to view profile</p>
+        </div>
+      </div>
+      <div class="qr-scanner-wrap">
+        <div class="qr-scan-options">
+          <button class="primary-btn" onclick="startQRScanner()">📷 Start Camera</button>
+          <button class="secondary-btn" onclick="stopQRScanner()">⏹️ Stop</button>
+        </div>
+        <div id="qr-reader"></div>
+        <div id="qr-result" class="qr-result-box">
+          <p>📷 Camera band hai. Start karo aur QR code scan karo...</p>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- STUDENT MODAL -->
+<div class="modal-overlay" id="student-modal" onclick="closeModal('student-modal')">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="closeModal('student-modal')">✕</button>
+    <div class="modal-header">
+      <div class="modal-icon">🎓</div>
+      <div>
+        <div class="modal-badge" id="student-modal-badge">New Record</div>
+        <h2 id="student-modal-title">Add Student</h2>
+      </div>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="student-edit-id">
+      <div class="form-grid">
+        <div class="form-field">
+          <label>Roll Number</label>
+          <input type="text" id="s-roll" placeholder="e.g. BCA001">
+        </div>
+        <div class="form-field">
+          <label>Full Name</label>
+          <input type="text" id="s-name" placeholder="e.g. Rahul Sharma">
+        </div>
+        <div class="form-field">
+          <label>Course</label>
+          <select id="s-course">
+            <option>BCA</option><option>BBA</option><option>B.Com</option><option>B.Sc</option><option>MCA</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Year</label>
+          <select id="s-year">
+            <option>1st Year</option><option>2nd Year</option><option>3rd Year</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Marks (out of 100)</label>
+          <input type="number" id="s-marks" placeholder="e.g. 85" min="0" max="100">
+        </div>
+        <div class="form-field">
+          <label>Email</label>
+          <input type="email" id="s-email" placeholder="student@email.com">
+        </div>
+        <div class="form-field" style="grid-column: 1 / -1;">
+          <label>Student Photo</label>
+          <div class="image-upload-wrap">
+            <img id="s-photo-preview" class="img-preview" style="display:none;">
+            <label for="s-photo" class="upload-btn">📸 Choose Photo</label>
+            <input type="file" id="s-photo" accept="image/*" onchange="previewImage(this,'s-photo-preview')" style="display:none;">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="secondary-btn" onclick="closeModal('student-modal')">Cancel</button>
+      <button class="primary-btn" onclick="saveStudent()">💾 Save Student</button>
+    </div>
+  </div>
+</div>
+
+<!-- FACULTY MODAL -->
+<div class="modal-overlay" id="faculty-modal" onclick="closeModal('faculty-modal')">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="closeModal('faculty-modal')">✕</button>
+    <div class="modal-header">
+      <div class="modal-icon">👨‍🏫</div>
+      <div>
+        <div class="modal-badge" id="faculty-modal-badge">New Record</div>
+        <h2 id="faculty-modal-title">Add Faculty</h2>
+      </div>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="faculty-edit-id">
+      <div class="form-grid">
+        <div class="form-field">
+          <label>Faculty ID</label>
+          <input type="text" id="f-id" placeholder="e.g. FAC001">
+        </div>
+        <div class="form-field">
+          <label>Full Name</label>
+          <input type="text" id="f-name" placeholder="e.g. Dr. Anita Verma">
+        </div>
+        <div class="form-field">
+          <label>Department</label>
+          <select id="f-dept">
+            <option>Computer Science</option><option>Commerce</option><option>Management</option><option>Science</option><option>Arts</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Designation</label>
+          <select id="f-designation">
+            <option>Professor</option><option>Associate Professor</option><option>Assistant Professor</option><option>Lecturer</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Email</label>
+          <input type="email" id="f-email" placeholder="faculty@college.com">
+        </div>
+        <div class="form-field">
+          <label>Phone</label>
+          <input type="tel" id="f-phone" placeholder="9876543210">
+        </div>
+        <div class="form-field" style="grid-column: 1 / -1;">
+          <label>Faculty Photo</label>
+          <div class="image-upload-wrap">
+            <img id="f-photo-preview" class="img-preview" style="display:none;">
+            <label for="f-photo" class="upload-btn">📸 Choose Photo</label>
+            <input type="file" id="f-photo" accept="image/*" onchange="previewImage(this,'f-photo-preview')" style="display:none;">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="secondary-btn" onclick="closeModal('faculty-modal')">Cancel</button>
+      <button class="primary-btn" onclick="saveFaculty()">💾 Save Faculty</button>
+    </div>
+  </div>
+</div>
+
+<!-- BOOK MODAL -->
+<div class="modal-overlay" id="book-modal" onclick="closeModal('book-modal')">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="closeModal('book-modal')">✕</button>
+    <div class="modal-header">
+      <div class="modal-icon">📚</div>
+      <div>
+        <div class="modal-badge">New Record</div>
+        <h2>Add Book</h2>
+      </div>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-field"><label>Book ID</label><input type="text" id="b-id" placeholder="BK001"></div>
+        <div class="form-field"><label>Title</label><input type="text" id="b-title"></div>
+        <div class="form-field"><label>Author</label><input type="text" id="b-author"></div>
+        <div class="form-field"><label>Category</label><input type="text" id="b-category"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="secondary-btn" onclick="closeModal('book-modal')">Cancel</button>
+      <button class="primary-btn" onclick="saveBook()">💾 Save Book</button>
+    </div>
+  </div>
+</div>
+
+<!-- ISSUE MODAL -->
+<div class="modal-overlay" id="issue-modal" onclick="closeModal('issue-modal')">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="closeModal('issue-modal')">✕</button>
+    <div class="modal-header">
+      <div class="modal-icon">📖</div>
+      <div><div class="modal-badge">Issue Book</div><h2>Issue Book</h2></div>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="issue-book-id">
+      <div class="form-grid">
+        <div class="form-field"><label>Student Name</label><input type="text" id="issue-student"></div>
+        <div class="form-field"><label>Due Date</label><input type="date" id="issue-due"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="secondary-btn" onclick="closeModal('issue-modal')">Cancel</button>
+      <button class="primary-btn" onclick="confirmIssue()">📖 Issue</button>
+    </div>
+  </div>
+</div>
+
+<!-- FEE MODAL -->
+<div class="modal-overlay" id="fee-modal" onclick="closeModal('fee-modal')">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="closeModal('fee-modal')">✕</button>
+    <div class="modal-header">
+      <div class="modal-icon">💰</div>
+      <div><div class="modal-badge">New Payment</div><h2>Collect Fee</h2></div>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-field"><label>Student Name</label><input type="text" id="f-student"></div>
+        <div class="form-field"><label>Amount (₹)</label><input type="number" id="f-amount"></div>
+        <div class="form-field"><label>Date</label><input type="date" id="f-date"></div>
+        <div class="form-field">
+          <label>Status</label>
+          <select id="f-status"><option>Paid</option><option>Pending</option></select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="secondary-btn" onclick="closeModal('fee-modal')">Cancel</button>
+      <button class="primary-btn" onclick="saveFee()">💰 Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- PROFILE / ID CARD MODAL -->
+<div class="modal-overlay" id="profile-modal" onclick="closeModal('profile-modal')">
+  <div class="modal-box profile-modal-box" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="closeModal('profile-modal')">✕</button>
+    <div id="id-card-content"></div>
+    <div class="modal-footer" style="justify-content:center;gap:12px;">
+      <button class="secondary-btn" onclick="printIDCard()">🖨️ Print ID Card</button>
+      <button class="primary-btn" onclick="closeModal('profile-modal')">Close</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toast-container"></div>
+<script src="script.js"></script>
+</body>
+</html>
